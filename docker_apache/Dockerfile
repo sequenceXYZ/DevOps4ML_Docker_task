@@ -1,4 +1,4 @@
-FROM httpd:2.4
+FROM httpd:2.4.57
 COPY ./website/ /usr/local/apache2/htdocs/
-# EXPOSE 15100
+EXPOSE 15100
 # CMD ["apachectl", "-D", "FOREGROUND"]
