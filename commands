@@ -36,7 +36,7 @@ docker run -d --name my-running-app -p 15100:80 my-apache2
 iptables -L
   
 #Create a rules to allow traffic only from the container public IP adress
-iptables -A INPUT -p tcp --dport 15100 -s 52.59.200.8 -j ACCEPT
+iptables -A INPUT -p tcp --dport 15100 -s <instance public IP> -j ACCEPT
 
 # see running webpage
-http://52.59.200.8:15100
+http://<instance public ip>:15100
