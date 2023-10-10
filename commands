@@ -1,0 +1,42 @@
+# Launch an EC2 instance
+# Connect to your EC2 instance
+# update your existing list of packages:
+sudo apt update
+# check docker presence on instance
+docker --version
+# Install Docker
+sudo apt install docker.io -y
+
+# Check the Docker service
+sudo systemctl status docker
+
+# Add user to the docker group to run Docker commands without using sudo
+sudo usermod -aG docker ssm-user
+
+# Pull down the official Apache httpd latest image from DockerHub
+docker pull httpd:2.4.57
+
+# Change direcory to /home/ssm-user
+cd ~
+
+# pull from GitHub repository with website code, jpg file and Dockerfile
+git clone https://github.com/sequenceXYZ/DevOps4ML_Docker_task.git
+
+# cd into directory DevOps4ML_Docker_task/docker_apache
+ls
+Dockerfile  website
+
+# build docker image
+$ docker build -t my-apache2 .
+
+# run doceker conatiner
+docker run -d --name my-running-app -p 15100:80 my-apache2
+
+# edit iptables
+iptables -L
+  
+#Create a rules to allow traffic only from the conatiner public IP adress
+iptables -A INPUT -p tcp --dport 15100 -s 52.59.200.8 -j ACCEPT
+
+# see running webpage
+http://52.59.200.8:15100
