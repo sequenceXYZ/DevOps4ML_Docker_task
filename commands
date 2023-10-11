@@ -29,14 +29,47 @@ Dockerfile  website
 # build docker image
 $ docker build -t my-apache2 .
 
-# run doceker conatiner
+# run doceker container
 docker run -d --name my-running-app -p 15100:80 my-apache2
 
+# check webage responibility
+curl -i http://localhost:15100
+
+
+# Create Acceess Rules using iptables
 # edit iptables
 iptables -L
-  
-#Create a rules to allow traffic only from the container public IP adress
-iptables -A INPUT -p tcp --dport 15100 -s <instance public IP> -j ACCEPT
+#Create a rule to allow traffic only from the container public IP adress
+iptables -A INPUT -p tcp --dport 15100 -s <private_private_ip> -j ACCEPT
+#Create a rule - one should be able to connect to the host instance by SSH
+iptables -A INPUT -p tcp --dport 22 -j DROP
+
+# Create Access Rules using AWS CLI
+# allow access from your private ip to port 15100
+aws ec2 authorize-security-group-ingress --group-id <your_sg_id> --protocol tcp --port 15100 --cidr <private_private_ip/32>
+# check existing 
+aws ec2 describe-security-group-rules --filters Name="group-id",Values="<your_sg_number>"
 
 # see running webpage
-http://<instance public ip>:15100
+http://<instance_public_ip>:15100
+
+
+---------------
+useful:
+# Make sure you replace this with the actual public IP address you want to allow. 
+Additionally, keep in mind that you have to allow your system Public IP from where you are trying to access the container on that specfic port. 
+# <private_private_ip> - EC2 instance offers under Security groups -> Inbound -> Source (MyIP)
+# option: MY_IP=$(hostname -I)
+
+# Authorize access on port 15100; example; use private_private_ip
+aws ec2 authorize-security-group-ingress --group-id sg-073c0ef135df1278c --protocol tcp --port 15100   --cidr 52.59.200.8/32
+aws ec2 authorize-security-group-ingress --group-id "$SG_ID" --protocol tcp --port 15100 --cidr "$IP/32"
+# $IP/32 are used to identify a route to a specific IP host address. 
+# Unlike a /24 (255.255. 255.0) which would give you 256 network addresses, a /32 only denotes one IP address.
+
+# Retrieve current IP address, example
+IP=`curl -s http://whatismyip.akamai.com/`
+# Authorize access on ports 22 and 15100
+aws ec2 authorize-security-group-ingress --group-name "SG-NAME" --protocol tcp --port 22   --cidr $IP/32 --profile class --output text
+aws ec2 authorize-security-group-ingress --group-name "SG-NAME" --protocol tcp --port 15100 --cidr $IP/32 --profile class --output text
+
