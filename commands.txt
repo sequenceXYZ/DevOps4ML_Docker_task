@@ -40,14 +40,14 @@ curl -i http://localhost:15100
 # edit iptables
 iptables -L
 #Create a rule to allow traffic only from the container public IP adress
-iptables -A INPUT -p tcp --dport 15100 -s <private_private_ip> -j ACCEPT
+iptables -A INPUT -p tcp --dport 15100 -s <public_ip> -j ACCEPT
 #Create a rule - one should be able to connect to the host instance by SSH
 iptables -A INPUT -p tcp --dport 22 -j DROP
 
 # Create Access Rules using AWS CLI
 # allow access from your private ip to port 15100
 aws ec2 authorize-security-group-ingress --group-id <your_sg_id> --protocol tcp --port 15100 --cidr <private_private_ip/32>
-# check existing 
+# check existing security group rules
 aws ec2 describe-security-group-rules --filters Name="group-id",Values="<your_sg_number>"
 
 # see running webpage
