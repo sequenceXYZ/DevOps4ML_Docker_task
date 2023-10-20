@@ -39,8 +39,8 @@ curl -i http://localhost:15100
 # Create Acceess Rules using iptables
 # edit iptables
 iptables -L
-#Create a rule to allow traffic only from the container public IP adress
-iptables -A INPUT -p tcp --dport 15100 -s <public_ip> -j ACCEPT
+#Create a rule to allow traffic only from the container private IP adress
+iptables -A INPUT -p tcp --dport 15100 -s <private_private_ip> -j ACCEPT
 #Create a rule - one should be able to connect to the host instance by SSH
 iptables -A INPUT -p tcp --dport 22 -j DROP
 
